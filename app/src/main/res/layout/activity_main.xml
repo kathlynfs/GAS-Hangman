@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
 <androidx.fragment.app.FragmentContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_container"
+    android:id="@+id/fragment_letters_container"
     android:name="com.example.gashangman.LettersFragment"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="365dp"
+    android:layout_height="250dp"
     tools:context=".MainActivity"
     >
-
-
-
 </androidx.fragment.app.FragmentContainerView>
+
+<androidx.fragment.app.FragmentContainerView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/fragment_hint_container"
+android:name="com.example.gashangman.HintFragment"
+android:layout_width="365dp"
+android:layout_height="100dp"
+tools:context=".MainActivity"
+    >
+</androidx.fragment.app.FragmentContainerView>
+
+</LinearLayout>
