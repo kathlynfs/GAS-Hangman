@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.example.gashangman.databinding.FragmentKeyboardBinding
 
 class KeyboardFragment : Fragment() {
@@ -20,8 +21,6 @@ class KeyboardFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
     }
 
     override fun onCreateView(
@@ -31,6 +30,7 @@ class KeyboardFragment : Fragment() {
     ): View? {
         _binding =
             FragmentKeyboardBinding.inflate(layoutInflater, container, false)
+
         return binding.root
     }
 
@@ -41,6 +41,7 @@ class KeyboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val viewModel: SharedViewModel by activityViewModels()
         binding.apply {
             letters.forEachIndexed { index, letter ->
                 val buttonId = resources.getIdentifier(letter.toString(), "id", requireActivity().packageName)
@@ -49,6 +50,7 @@ class KeyboardFragment : Fragment() {
                 button.setOnClickListener {
                     it.isEnabled = false
                     keyboardPressed[index] = true
+                    viewModel.setChar(button.text[0])
                 }
             }
         }
