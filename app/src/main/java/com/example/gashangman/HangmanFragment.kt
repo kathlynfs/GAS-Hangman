@@ -13,6 +13,9 @@ import com.example.gashangman.databinding.FragmentHangmanBinding
 
 class HangmanFragment : Fragment() {
     private var _binding: FragmentHangmanBinding? = null
+    private var keyboardPressed: BooleanArray = BooleanArray(26)
+    private var word: String = "ANDROID"
+    private var wordArr: CharArray = word.toCharArray()
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
@@ -29,48 +32,36 @@ class HangmanFragment : Fragment() {
     ): View? {
         _binding =
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
-
         return binding.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-//        outState.putBooleanArray("keyboard", keyboardPressed)
+        outState.putBooleanArray("keyboard", keyboardPressed)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val model: SharedViewModel by activityViewModels()
         model.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
-            Log.d("TAG", input.toString())
             binding.word.apply {
-                text = input.toString()
+                keyboardPressed[input - 'A'] = true
+                text = ""
+                for (c in wordArr) {
+                    Log.d("TAG", c.toString())
+                    if (keyboardPressed[c - 'A']) {
+                        text = text.toString() + c
+                    } else {
+                        text = text.toString() + '_'
+                    }
+                    text = text.toString() + " "
+                }
+
             }
         })
-        binding.apply {
-//            letters.forEachIndexed { index, letter ->
-//                val buttonId = resources.getIdentifier(letter.toString(), "id", requireActivity().packageName)
-//                val button = view.findViewById<Button>(buttonId)
-//
-//                button.setOnClickListener {
-//                    it.isEnabled = false
-//                    keyboardPressed[index] = true
-//                }
-//            }
-        }
+
         if (savedInstanceState != null) {
-//            keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
-//            Log.d("TAG",keyboardPressed.contentToString())
-//            val buttons = arrayOf(
-//                binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
-//                binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
-//                binding.o, binding.p, binding.q, binding.r, binding.s, binding.t, binding.u,
-//                binding.v, binding.w, binding.x, binding.y, binding.z
-//            )
-//
-//            buttons.forEachIndexed { index, button ->
-//                button.isEnabled = !keyboardPressed[index]
-//            }
+            keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
         }
     }
     override fun onDestroyView() {

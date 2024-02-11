@@ -56,7 +56,6 @@ class KeyboardFragment : Fragment() {
         }
         if (savedInstanceState != null) {
             keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
-            Log.d("TAG",keyboardPressed.contentToString())
             val buttons = arrayOf(
                 binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
                 binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
