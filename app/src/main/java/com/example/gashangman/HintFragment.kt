@@ -14,6 +14,7 @@ class HintFragment : Fragment()
 {
     private var _binding: FragmentHintBinding? = null
     private var hintCount = 0
+    private var lives = 6
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -37,7 +38,8 @@ class HintFragment : Fragment()
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // outState.putInt("lives", lives)
+        outState.putInt("lives", lives)
+        outState.putInt("hintCount", hintCount)
         // save number of hints given
         //save current state of letters left on keyboard
     }
@@ -46,20 +48,34 @@ class HintFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
         val viewModel: SharedViewModel by activityViewModels()
 
+        viewModel.setLives(lives)
+        viewModel.setHintCount(hintCount)
+
         binding.hintButton.setOnClickListener {
-            val lives = viewModel.getLives()
+            lives = viewModel.getLives().value!!
+            hintCount = viewModel.getHintCount().value!!
 
-            if(hintCount == 0 && lives > 1)
+            if(hintCount == 0)
             {
-
+                binding.hint.setText(R.string.hint)
+                hintCount +=1
+                viewModel.setHintCount(hintCount)
             }
             else if(hintCount == 1 && lives > 1)
             {
-
+                hintCount +=1
+                lives -=1
+                viewModel.setHintCount(hintCount)
+                viewModel.setLives(lives)
+                // need to draw additional part on man when hint is used
             }
             else if(hintCount == 2 && lives > 1)
             {
-
+                hintCount +=1
+                lives -=1
+                viewModel.setHintCount(hintCount)
+                viewModel.setLives(lives)
+                // need to draw additional part on man when hint is used
             }
             else
             {

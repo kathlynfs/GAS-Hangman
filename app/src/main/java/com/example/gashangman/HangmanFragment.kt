@@ -49,12 +49,10 @@ class HangmanFragment : Fragment() {
         binding.imageView.apply {
             setImageResource(R.drawable.hangman_state_6_lives)
         }
-        val model: SharedViewModel by activityViewModels()
-        model.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
-            if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
-                lives -= 1
-            }
+        val viewModel: SharedViewModel by activityViewModels()
 
+        viewModel.getLives().observe(viewLifecycleOwner, Observer<Int> {input ->
+            lives = input
             binding.imageView.apply{
                 if (lives == 5) {
                     setImageResource(R.drawable.hangman_state_5_lives)
@@ -69,6 +67,13 @@ class HangmanFragment : Fragment() {
                 } else if (lives <= 0) {
                     setImageResource(R.drawable.hangman_state_0_lives)
                 }
+            }
+        })
+
+        viewModel.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
+            if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
+                lives -= 1
+                viewModel.setLives(lives)
             }
 
             keyboardPressed[input - 'A'] = true
