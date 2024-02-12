@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -45,13 +44,33 @@ class HangmanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("TAG", R.string.word_to_guess.toString())
         printWordAndLives()
+        binding.imageView.apply {
+            setImageResource(R.drawable.hangman_state_6_lives)
+        }
         val model: SharedViewModel by activityViewModels()
         model.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
             if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
                 lives -= 1
-
             }
+
+            binding.imageView.apply{
+                if (lives == 5) {
+                    setImageResource(R.drawable.hangman_state_5_lives)
+                } else if (lives == 4) {
+                    setImageResource(R.drawable.hangman_state_4_lives)
+                } else if (lives == 3) {
+                    setImageResource(R.drawable.hangman_state_3_lives)
+                } else if (lives == 2) {
+                    setImageResource(R.drawable.hangman_state_2_lives)
+                } else if (lives == 1) {
+                    setImageResource(R.drawable.hangman_state_1_lives)
+                } else if (lives <= 0) {
+                    setImageResource(R.drawable.hangman_state_0_lives)
+                }
+            }
+
             keyboardPressed[input - 'A'] = true
 
             printWordAndLives()
@@ -71,7 +90,6 @@ class HangmanFragment : Fragment() {
         binding.word.apply {
             text = ""
             for (c in wordArr) {
-                Log.d("TAG", c.toString())
                 text = if (keyboardPressed[c - 'A']) {
                     text.toString() + c
                 } else {
@@ -79,9 +97,6 @@ class HangmanFragment : Fragment() {
                 }
                 text = text.toString() + " "
             }
-        }
-        binding.lives.apply {
-            text = (lives).toString()
         }
     }
 }
