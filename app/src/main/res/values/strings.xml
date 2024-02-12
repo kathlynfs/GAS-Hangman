@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">[GAS] Hangman</string>
     <string name="word_to_guess">ANDROID</string>
+    <string name="select_a_word">CHOOSE A LETTER</string>
     <string name="a">A</string>
     <string name="b">B</string>
     <string name="c">C</string>

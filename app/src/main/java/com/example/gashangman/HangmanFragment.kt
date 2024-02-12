@@ -44,6 +44,7 @@ class HangmanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("TAG", R.string.word_to_guess.toString())
         printWordAndLives()
         binding.imageView.apply {
             setImageResource(R.drawable.hangman_state_6_lives)
@@ -89,7 +90,6 @@ class HangmanFragment : Fragment() {
         binding.word.apply {
             text = ""
             for (c in wordArr) {
-                Log.d("TAG", c.toString())
                 text = if (keyboardPressed[c - 'A']) {
                     text.toString() + c
                 } else {
