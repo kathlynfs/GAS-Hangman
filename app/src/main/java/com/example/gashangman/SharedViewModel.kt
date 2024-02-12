@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 class SharedViewModel : ViewModel() {
     private val char = MutableLiveData<Char>()
 
-    private var lives = 6
+    private var lives = MutableLiveData<Int>()
+
+    private var hintCount = MutableLiveData<Int>()
 
     fun setChar(input: Char) {
         char.value = input
@@ -18,9 +20,20 @@ class SharedViewModel : ViewModel() {
 
     fun setLives(input: Int)
     {
-        lives = input
+        lives.value = input
     }
-    fun getLives(): Int {
+    fun getLives(): LiveData<Int>
+    {
         return lives
+    }
+
+    fun setHintCount(input: Int)
+    {
+        hintCount.value = input
+    }
+
+    fun getHintCount(): LiveData<Int>
+    {
+        return hintCount
     }
 }
