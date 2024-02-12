@@ -14,6 +14,8 @@ import com.example.gashangman.databinding.FragmentHangmanBinding
 class HangmanFragment : Fragment() {
     private var _binding: FragmentHangmanBinding? = null
     private var keyboardPressed: BooleanArray = BooleanArray(26)
+    private var lives: Int = 6
+    //LOOK TO MAKE THIS NOT HARD-CODED
     private var word: String = "ANDROID"
     private var wordArr: CharArray = word.toCharArray()
     private val binding
@@ -38,34 +40,48 @@ class HangmanFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
+        outState.putInt("lives", lives)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        printWordAndLives()
         val model: SharedViewModel by activityViewModels()
         model.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
-            binding.word.apply {
-                keyboardPressed[input - 'A'] = true
-                text = ""
-                for (c in wordArr) {
-                    Log.d("TAG", c.toString())
-                    if (keyboardPressed[c - 'A']) {
-                        text = text.toString() + c
-                    } else {
-                        text = text.toString() + '_'
-                    }
-                    text = text.toString() + " "
-                }
+            if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
+                lives -= 1
 
             }
+            keyboardPressed[input - 'A'] = true
+
+            printWordAndLives()
         })
 
         if (savedInstanceState != null) {
             keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
+            lives = savedInstanceState.getInt("lives") ?: 6
         }
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun printWordAndLives() {
+        binding.word.apply {
+            text = ""
+            for (c in wordArr) {
+                Log.d("TAG", c.toString())
+                text = if (keyboardPressed[c - 'A']) {
+                    text.toString() + c
+                } else {
+                    text.toString() + '_'
+                }
+                text = text.toString() + " "
+            }
+        }
+        binding.lives.apply {
+            text = (lives).toString()
+        }
     }
 }
