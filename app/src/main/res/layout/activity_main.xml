@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-<androidx.fragment.app.FragmentContainerView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_letters_container"
-    android:name="com.example.gashangman.LettersFragment"
-    android:layout_width="365dp"
-    android:layout_height="250dp"
-    tools:context=".MainActivity"
-    >
-</androidx.fragment.app.FragmentContainerView>
-
-<androidx.fragment.app.FragmentContainerView
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/fragment_hint_container"
-android:name="com.example.gashangman.HintFragment"
-android:layout_width="365dp"
-android:layout_height="100dp"
-tools:context=".MainActivity"
-    >
-</androidx.fragment.app.FragmentContainerView>
-
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/keyboard_fragment_container"
+        android:name="com.example.gashangman.KeyboardFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/hangman_fragment_container"
+        android:name="com.example.gashangman.HangmanFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/hint_fragment_container"
+        android:name="com.example.gashangman.HintFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

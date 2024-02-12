@@ -4,10 +4,16 @@
     android:layout_height="match_parent">
 
     <Button
+        android:id="@+id/hintButton"
+        android:layout_height="50dp"
+        android:layout_width="100dp"
+        android:text="@string/hint_button"
+        />
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="100dp"
         android:text="@string/hint"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-    </Button>
+        />
 
 </LinearLayout>
