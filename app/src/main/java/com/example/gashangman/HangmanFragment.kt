@@ -71,6 +71,7 @@ class HangmanFragment : Fragment() {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
         outState.putInt("lives", lives)
+        outState.putInt("currentIndex", currentIndex)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -132,6 +133,8 @@ class HangmanFragment : Fragment() {
         if (savedInstanceState != null) {
             keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
             lives = savedInstanceState.getInt("lives") ?: 6
+            currentIndex = savedInstanceState.getInt("currentIndex") ?: 0
+            updateWord(currentIndex)
             printWordAndLives()
         }
     }
@@ -186,6 +189,11 @@ class HangmanFragment : Fragment() {
             }
             .setCancelable(false) // Prevent dismissing dialog when clicking outside or back button
             .show()
+    }
+
+    private fun updateWord(index: Int) {
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
     }
 
     private fun resetGame() {
