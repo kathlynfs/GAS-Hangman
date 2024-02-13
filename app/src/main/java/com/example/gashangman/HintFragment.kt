@@ -67,7 +67,12 @@ class HintFragment : Fragment()
                 lives -=1
                 viewModel.setHintCount(hintCount)
                 viewModel.setLives(lives)
-                // need to draw additional part on man when hint is used
+
+                Toast.makeText(
+                    requireContext(),
+                    R.string.second_hint,
+                    Toast.LENGTH_LONG
+                ).show()
             }
             else if(hintCount == 2 && lives > 1)
             {
@@ -75,19 +80,28 @@ class HintFragment : Fragment()
                 lives -=1
                 viewModel.setHintCount(hintCount)
                 viewModel.setLives(lives)
-                // need to draw additional part on man when hint is used
-            }
-            else
-            {
-                // create toast to say hint cannot be requested
-                /*
-                Toast.makeText(
-                    this,
-                    "string",
-                    Toast.LENGTH_SHORT
-                ).show()
-                */
 
+                Toast.makeText(
+                    requireContext(),
+                    R.string.third_hint,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            else if(hintCount > 2)
+            {
+                Toast.makeText(
+                    requireContext(),
+                    R.string.out_of_hints,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            else if(lives <= 1)
+            {
+                Toast.makeText(
+                    requireContext(),
+                    R.string.too_few_lives,
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
