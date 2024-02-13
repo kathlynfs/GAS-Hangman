@@ -9,10 +9,10 @@
 
     <Button
         android:id="@+id/hintButton"
-        android:layout_height="75dp"
-        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:text="@string/hint_button"
-        android:textSize="40sp"
+        android:textSize="35sp"
         />
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="@string/hint"
-        android:textSize="40sp"
+        android:textSize="35sp"
         android:gravity="center"
         />
 
