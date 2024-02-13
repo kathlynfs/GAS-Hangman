@@ -11,7 +11,26 @@ class SharedViewModel : ViewModel() {
 
     private var hintCount = MutableLiveData<Int>()
 
+    private var currentIndex = MutableLiveData<Int>()
+
     private var isReturningState = false
+
+    private val newGameEvent = MutableLiveData<Boolean>()
+
+    fun getCurrentIndex(): MutableLiveData<Int> {
+        return currentIndex
+    }
+
+    fun setCurrentIndex(input: Int) {
+        currentIndex.value = input
+    }
+    fun getState(): MutableLiveData<Boolean> {
+        return newGameEvent
+    }
+
+    fun setState(input: Boolean) {
+        newGameEvent.value = input
+    }
 
     fun setChar(input: Char) {
         char.value = input
@@ -48,4 +67,7 @@ class SharedViewModel : ViewModel() {
     {
         return isReturningState
     }
+
+
+
 }
