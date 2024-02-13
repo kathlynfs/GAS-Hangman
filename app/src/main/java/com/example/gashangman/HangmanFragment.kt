@@ -34,6 +34,15 @@ class HangmanFragment : Fragment() {
             R.string.guess_you
         )
 
+    val hintBank: List<Int>
+        get() = listOf(
+            R.string.hint_android,
+            R.string.hint_camera,
+            R.string.hint_fragment,
+            R.string.hint_activity,
+            R.string.hint_you
+        )
+
     private var currentIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,6 +132,7 @@ class HangmanFragment : Fragment() {
         if (savedInstanceState != null) {
             keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
             lives = savedInstanceState.getInt("lives") ?: 6
+            printWordAndLives()
         }
     }
     override fun onDestroyView() {
