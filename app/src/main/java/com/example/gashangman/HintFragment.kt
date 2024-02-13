@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.example.gashangman.databinding.FragmentHintBinding
 
 class HintFragment : Fragment()
@@ -38,10 +39,8 @@ class HintFragment : Fragment()
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("lives", lives)
         outState.putInt("hintCount", hintCount)
-        // save number of hints given
-        //save current state of letters left on keyboard
+        outState.putInt("lives", lives)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,12 +58,14 @@ class HintFragment : Fragment()
             {
                 binding.hint.setText(R.string.hint)
                 hintCount +=1
+                viewModel.setIsReturningState(false)
                 viewModel.setHintCount(hintCount)
             }
             else if(hintCount == 1 && lives > 1)
             {
                 hintCount +=1
                 lives -=1
+                viewModel.setIsReturningState(false)
                 viewModel.setHintCount(hintCount)
                 viewModel.setLives(lives)
 
@@ -78,6 +79,7 @@ class HintFragment : Fragment()
             {
                 hintCount +=1
                 lives -=1
+                viewModel.setIsReturningState(false)
                 viewModel.setHintCount(hintCount)
                 viewModel.setLives(lives)
 
@@ -105,6 +107,25 @@ class HintFragment : Fragment()
             }
         }
 
+        viewModel.getLives().observe(viewLifecycleOwner, Observer<Int> { input ->
+            lives = input
+        })
+
+        if (savedInstanceState != null)
+        {
+            viewModel.setIsReturningState(true)
+            hintCount = savedInstanceState.getInt("hintCount")
+            lives = savedInstanceState.getInt("lives")
+
+            if(hintCount >= 1)
+            {
+                binding.hint.setText(R.string.hint)
+            }
+
+            viewModel.setHintCount(hintCount)
+
+            viewModel.setLives(lives)
+        }
     }
 
     override fun onDestroyView() {

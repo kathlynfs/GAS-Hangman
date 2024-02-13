@@ -41,6 +41,7 @@ class HangmanFragment : Fragment() {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
         outState.putInt("lives", lives)
+        outState.putInt("hintCount", hintCount)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,15 +74,15 @@ class HangmanFragment : Fragment() {
 
         viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
             hintCount = input
-            if(hintCount == 3)
-            {
-                var vowels = "AEIOU"
-                for(v in vowels)
-                {
-                    keyboardPressed[v - 'A'] = true
-                }
+            if(!viewModel.getIsReturningState()) {
+                if (hintCount == 3) {
+                    var vowels = "AEIOU"
+                    for (v in vowels) {
+                        keyboardPressed[v - 'A'] = true
+                    }
 
-                printWordAndLives()
+                    printWordAndLives()
+                }
             }
         })
 
@@ -98,7 +99,7 @@ class HangmanFragment : Fragment() {
 
         if (savedInstanceState != null) {
             keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
-            lives = savedInstanceState.getInt("lives") ?: 6
+            lives = savedInstanceState.getInt("lives")
         }
     }
     override fun onDestroyView() {

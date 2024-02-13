@@ -41,7 +41,7 @@ class KeyboardFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
-
+        outState.putInt("hintCount", hintCount)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,71 +62,67 @@ class KeyboardFragment : Fragment() {
 
         viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
             hintCount = input
-            if(hintCount == 2)
-            {
-                var lettersToDisableCount = 0
-                var lettersToDisable = ""
-                letters.forEachIndexed { index, letter ->
-                    val buttonId = resources.getIdentifier(
-                        letter.toString(),
-                        "id",
-                        requireActivity().packageName
-                    )
-                    val button = view.findViewById<Button>(buttonId)
+            if(!viewModel.getIsReturningState()) {
+                if (hintCount == 2) {
+                    var lettersToDisableCount = 0
+                    var lettersToDisable = ""
+                    letters.forEachIndexed { index, letter ->
+                        val buttonId = resources.getIdentifier(
+                            letter.toString(),
+                            "id",
+                            requireActivity().packageName
+                        )
+                        val button = view.findViewById<Button>(buttonId)
 
-                    if(button.isEnabled == true && !word.contains(letter))
-                    {
-                        lettersToDisableCount +=1
-                        lettersToDisable = lettersToDisable + letter
-                    }
-                }
-
-                lettersToDisableCount = (lettersToDisableCount/2).toInt()
-
-                while(lettersToDisableCount > 0)
-                {
-                    var i = (Math.random()*(lettersToDisable.length)).toInt()
-
-                    val buttonId = resources.getIdentifier(
-                        lettersToDisable.substring(i, i+1),
-                        "id",
-                        requireActivity().packageName
-                    )
-                    val button = view.findViewById<Button>(buttonId)
-
-                    button.isEnabled = false
-
-                    if(i == lettersToDisable.length - 1)
-                    {
-                        lettersToDisable = lettersToDisable.substring(0, i)
-                    }
-                    else
-                    {
-                        lettersToDisable = lettersToDisable.substring(0, i) + lettersToDisable.substring(i+1)
+                        if (button.isEnabled == true && !word.contains(letter)) {
+                            lettersToDisableCount += 1
+                            lettersToDisable = lettersToDisable + letter
+                        }
                     }
 
-                    lettersToDisableCount -=1
-                }
+                    lettersToDisableCount = (lettersToDisableCount / 2).toInt()
 
-            }
-            else if(hintCount == 3)
-            {
-                var vowels = "aeiou"
-                var i =0
-                while(i < 5) {
-                    val buttonId = resources.getIdentifier(
-                        vowels.substring(i, i + 1),
-                        "id",
-                        requireActivity().packageName
-                    )
-                    val button = view.findViewById<Button>(buttonId)
+                    while (lettersToDisableCount > 0) {
+                        var i = (Math.random() * (lettersToDisable.length)).toInt()
 
-                    button.isEnabled = false
+                        val buttonId = resources.getIdentifier(
+                            lettersToDisable.substring(i, i + 1),
+                            "id",
+                            requireActivity().packageName
+                        )
+                        val button = view.findViewById<Button>(buttonId)
 
-                    i +=1
+                        button.isEnabled = false
+
+                        keyboardPressed[lettersToDisable.get(i) - 'a'] = true
+
+                        if (i == lettersToDisable.length - 1) {
+                            lettersToDisable = lettersToDisable.substring(0, i)
+                        } else {
+                            lettersToDisable =
+                                lettersToDisable.substring(0, i) + lettersToDisable.substring(i + 1)
+                        }
+
+                        lettersToDisableCount -= 1
+                    }
+
+                } else if (hintCount == 3) {
+                    var vowels = "aeiou"
+                    var i = 0
+                    while (i < 5) {
+                        val buttonId = resources.getIdentifier(
+                            vowels.substring(i, i + 1),
+                            "id",
+                            requireActivity().packageName
+                        )
+                        val button = view.findViewById<Button>(buttonId)
+
+                        button.isEnabled = false
+
+                        i += 1
+                    }
                 }
             }
-
         })
 
         if (savedInstanceState != null) {
@@ -141,6 +137,8 @@ class KeyboardFragment : Fragment() {
             buttons.forEachIndexed { index, button ->
                 button.isEnabled = !keyboardPressed[index]
             }
+
+            hintCount = savedInstanceState.getInt("hintCount")
         }
     }
     override fun onDestroyView() {

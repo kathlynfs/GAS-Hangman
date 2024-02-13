@@ -11,6 +11,8 @@ class SharedViewModel : ViewModel() {
 
     private var hintCount = MutableLiveData<Int>()
 
+    private var isReturningState = false
+
     fun setChar(input: Char) {
         char.value = input
     }
@@ -35,5 +37,15 @@ class SharedViewModel : ViewModel() {
     fun getHintCount(): LiveData<Int>
     {
         return hintCount
+    }
+
+    fun setIsReturningState(input: Boolean)
+    {
+        isReturningState = input
+    }
+
+    fun getIsReturningState() : Boolean
+    {
+        return isReturningState
     }
 }
