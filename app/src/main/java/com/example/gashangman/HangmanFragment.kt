@@ -15,8 +15,8 @@ class HangmanFragment : Fragment() {
     private var keyboardPressed: BooleanArray = BooleanArray(26)
     private var lives: Int = 6
     //LOOK TO MAKE THIS NOT HARD-CODED
-    private var word: String = "ANDROID"
-    private var wordArr: CharArray = word.toCharArray()
+    private lateinit var word: String
+    private lateinit var wordArr: CharArray
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
@@ -33,6 +33,8 @@ class HangmanFragment : Fragment() {
     ): View? {
         _binding =
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
+        word = getString(R.string.word_to_guess)
+        wordArr = word.toCharArray()
         return binding.root
     }
 
@@ -44,6 +46,7 @@ class HangmanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         Log.d("TAG", R.string.word_to_guess.toString())
         printWordAndLives()
         binding.imageView.apply {
