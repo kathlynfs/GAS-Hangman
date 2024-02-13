@@ -14,6 +14,7 @@ class HangmanFragment : Fragment() {
     private var _binding: FragmentHangmanBinding? = null
     private var keyboardPressed: BooleanArray = BooleanArray(26)
     private var lives: Int = 6
+    private var hintCount = 0
     //LOOK TO MAKE THIS NOT HARD-CODED
     private var word: String = "ANDROID"
     private var wordArr: CharArray = word.toCharArray()
@@ -67,6 +68,20 @@ class HangmanFragment : Fragment() {
                 } else if (lives <= 0) {
                     setImageResource(R.drawable.hangman_state_0_lives)
                 }
+            }
+        })
+
+        viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
+            hintCount = input
+            if(hintCount == 3)
+            {
+                var vowels = "AEIOU"
+                for(v in vowels)
+                {
+                    keyboardPressed[v - 'A'] = true
+                }
+
+                printWordAndLives()
             }
         })
 

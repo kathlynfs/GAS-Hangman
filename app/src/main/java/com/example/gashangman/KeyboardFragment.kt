@@ -84,7 +84,7 @@ class KeyboardFragment : Fragment() {
 
                 while(lettersToDisableCount > 0)
                 {
-                    var i = (Math.random()*(lettersToDisable.length+1)).toInt()
+                    var i = (Math.random()*(lettersToDisable.length)).toInt()
 
                     val buttonId = resources.getIdentifier(
                         lettersToDisable.substring(i, i+1),
@@ -95,7 +95,7 @@ class KeyboardFragment : Fragment() {
 
                     button.isEnabled = false
 
-                    if(i == lettersToDisable.length)
+                    if(i == lettersToDisable.length - 1)
                     {
                         lettersToDisable = lettersToDisable.substring(0, i)
                     }
@@ -121,7 +121,7 @@ class KeyboardFragment : Fragment() {
                     val button = view.findViewById<Button>(buttonId)
 
                     button.isEnabled = false
-                    
+
                     i +=1
                 }
             }
