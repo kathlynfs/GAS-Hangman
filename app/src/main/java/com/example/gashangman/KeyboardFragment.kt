@@ -18,6 +18,17 @@ class KeyboardFragment : Fragment() {
     private val letters = ('a'..'z').toList()
     private var hintCount = 0
     private var word: String = "android"
+
+    interface KeyboardInteractionListener {
+        fun enableAllButtons()
+    }
+
+    private var interactionListener: KeyboardInteractionListener? = null
+
+    fun setInteractionListener(listener: KeyboardInteractionListener) {
+        interactionListener = listener
+    }
+
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
@@ -41,6 +52,19 @@ class KeyboardFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
+    }
+
+    override fun enableAllButtons() {
+        val buttons = arrayOf(
+            binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
+            binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
+            binding.o, binding.p, binding.q, binding.r, binding.s, binding.t, binding.u,
+            binding.v, binding.w, binding.x, binding.y, binding.z
+        )
+
+        buttons.forEach { button ->
+            button.isEnabled = true
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
