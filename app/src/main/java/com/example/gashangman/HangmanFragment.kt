@@ -38,7 +38,7 @@ class HangmanFragment : Fragment() {
     ): View? {
         _binding =
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
-        word = getString(R.string.word_to_guess)
+        word = getString(R.string.guess_android)
         wordArr = word.toCharArray()
         return binding.root
     }
@@ -53,7 +53,7 @@ class HangmanFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("TAG", R.string.word_to_guess.toString())
+        Log.d("TAG", R.string.guess_android.toString())
         printWordAndLives()
         binding.imageView.apply {
             setImageResource(R.drawable.hangman_state_6_lives)
