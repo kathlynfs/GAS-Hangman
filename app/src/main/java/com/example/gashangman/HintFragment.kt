@@ -16,8 +16,7 @@ class HintFragment : Fragment() {
     private lateinit var word: String
     private lateinit var wordArr: CharArray
     private var hints: Int = 3
-    private lateinit var currHint: String
-    private var pastIndex = 0
+    private lateinit var hint: String
     private var currentIndex = 0
 
     private lateinit var hintBank: List<Int>
@@ -47,14 +46,9 @@ class HintFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("hints", hints)
-        outState.putInt("currentIndex", currentIndex)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (savedInstanceState != null) {
-            hints = savedInstanceState.getInt("hints") ?: 3
-            currentIndex = savedInstanceState.getInt("currentIndex") ?: 0
-        }
         val viewModel: SharedViewModel by activityViewModels()
 
         hintBank = listOf(
@@ -64,32 +58,24 @@ class HintFragment : Fragment() {
             R.string.hint_activity,
             R.string.hint_you
         )
-        currHint = getString(hintBank[currentIndex])
 
         viewModel.getCurrentIndex().observe(viewLifecycleOwner, Observer<Int> { input ->
-            Log.d("TAG", input.toString())
             currentIndex = input
-            currHint = getString(hintBank[currentIndex])
+            updateHint(currentIndex)
         })
 
-        viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> { input ->
-            Log.d("TAG", "DAOUSODHAS")
-            hints = input
-            binding.hint.text = ""
-        })
-
-
+        if (savedInstanceState != null) {
+            hints = savedInstanceState.getInt("hints") ?: 3
+        }
         if (hints <= 2) {
-            binding.hint.text = currHint
-        } else {
-            binding.hint.text = ""
+            binding.hint.text = hint.toString()
         }
         binding.apply {
             hintButton.setOnClickListener{
                 hints--
                 Log.d("TAG", hints.toString())
                 if (hints <= 2) {
-                    binding.hint.text = currHint
+                    binding.hint.text = hint.toString()
                 }
                 viewModel.setHints(hints)
             }
@@ -98,8 +84,7 @@ class HintFragment : Fragment() {
     }
 
     private fun updateHint(index: Int) {
-        Log.d("TAG", getString(hintBank[currentIndex]))
-        currHint = getString(hintBank[currentIndex])
+        hint = getString(hintBank[currentIndex])
     }
 
     override fun onDestroyView() {
