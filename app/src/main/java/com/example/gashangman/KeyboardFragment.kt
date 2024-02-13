@@ -41,6 +41,7 @@ class KeyboardFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
