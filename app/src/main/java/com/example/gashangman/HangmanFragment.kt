@@ -34,15 +34,6 @@ class HangmanFragment : Fragment() {
             R.string.guess_you
         )
 
-    val hintBank: List<Int>
-        get() = listOf(
-            R.string.hint_android,
-            R.string.hint_camera,
-            R.string.hint_fragment,
-            R.string.hint_activity,
-            R.string.hint_you
-        )
-
     private var currentIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,12 +47,13 @@ class HangmanFragment : Fragment() {
     ): View? {
         _binding =
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
-        word = getString(R.string.guess_android)
-        wordArr = word.toCharArray()
+        updateWord(currentIndex)
 
         // Initialize the newGameButton
         binding.newGameButton.setOnClickListener {
-            resetGame()
+            val viewModel: SharedViewModel by activityViewModels()
+            newGameEvent = true
+            viewModel.setState(newGameEvent)
         }
 
         return binding.root
@@ -88,7 +80,9 @@ class HangmanFragment : Fragment() {
         viewModel.getLives().observe(viewLifecycleOwner, Observer<Int> {input ->
             lives = input
             binding.imageView.apply{
-                if (lives == 5) {
+                if (lives == 6) {
+                    setImageResource(R.drawable.hangman_state_6_lives)
+                } else if (lives == 5) {
                     setImageResource(R.drawable.hangman_state_5_lives)
                 } else if (lives == 4) {
                     setImageResource(R.drawable.hangman_state_4_lives)
@@ -104,6 +98,35 @@ class HangmanFragment : Fragment() {
             }
         } )
 
+        viewModel.getState().observe(viewLifecycleOwner, Observer<Boolean> {input ->
+            newGameEvent = input
+            if (newGameEvent) {
+                lives = 6
+                viewModel.setLives(lives)
+
+                // Reset hint count
+                hintCount = 0
+                viewModel.setHintCount(hintCount)
+
+                // Update the word
+                currentIndex = (currentIndex + 1) % wordBank.size // Increment currentIndex to cycle through words
+                updateWord(currentIndex)
+                viewModel.setCurrentIndex(currentIndex)
+
+                // reset keyboard
+                keyboardPressed = BooleanArray(26)
+                newGameEvent = true
+                viewModel.setState(newGameEvent)
+
+                // Reset the UI to reflect the changes
+                printWordAndLives()
+
+                // in a new game
+                newGameEvent = false
+                viewModel.setState(newGameEvent)
+            }
+        })
+
         viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
             hintCount = input
             if(!viewModel.getIsReturningState()) {
@@ -117,6 +140,8 @@ class HangmanFragment : Fragment() {
                 }
             }
         })
+
+
 
         viewModel.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
             if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
@@ -184,7 +209,9 @@ class HangmanFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setMessage(message)
             .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
-                resetGame()
+                val viewModel: SharedViewModel by activityViewModels()
+                newGameEvent = true
+                viewModel.setState(newGameEvent)
                 dialog.dismiss()
             }
             .setCancelable(false) // Prevent dismissing dialog when clicking outside or back button
@@ -196,33 +223,6 @@ class HangmanFragment : Fragment() {
         wordArr = word.toCharArray()
     }
 
-    private fun resetGame() {
-        val viewModel: SharedViewModel by activityViewModels()
-        // Reset lives
-        lives = 6
-        viewModel.setLives(lives)
-
-        // Reset hint count
-        hintCount = 0
-        viewModel.setHintCount(hintCount)
-
-        // Update the word
-        currentIndex = (currentIndex + 1) % wordBank.size // Increment currentIndex to cycle through words
-        word = getString(wordBank[currentIndex])
-        wordArr = word.toCharArray()
-        viewModel.setCurrentIndex(currentIndex)
-
-        // Reset keyboard
-        newGameEvent = true
-        viewModel.setState(newGameEvent)
-        keyboardPressed = BooleanArray(26)
-
-        // Reset hangman view
-        binding.imageView.setImageResource(R.drawable.hangman_state_6_lives)
-
-        // Reset the UI to reflect the changes
-        printWordAndLives()
-    }
 
 
 }
