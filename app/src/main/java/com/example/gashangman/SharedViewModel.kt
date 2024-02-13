@@ -7,7 +7,14 @@ import androidx.lifecycle.ViewModel
 class SharedViewModel : ViewModel() {
     private val char = MutableLiveData<Char>()
     private val lives = MutableLiveData<Int>()
+    private var currentIndex = MutableLiveData<Int>()
 
+    fun getCurrentIndex(): MutableLiveData<Int> {
+        return currentIndex
+    }
+    fun setCurrentIndex(input: Int) {
+        currentIndex.value = input
+    }
     fun setHints(input: Int) {
         lives.value = input
     }
