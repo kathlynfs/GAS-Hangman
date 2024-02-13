@@ -19,15 +19,6 @@ class KeyboardFragment : Fragment() {
     private var hintCount = 0
     private var word: String = "android"
 
-    interface KeyboardInteractionListener {
-        fun enableAllButtons()
-    }
-
-    private var interactionListener: KeyboardInteractionListener? = null
-
-    fun setInteractionListener(listener: KeyboardInteractionListener) {
-        interactionListener = listener
-    }
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -55,7 +46,7 @@ class KeyboardFragment : Fragment() {
         outState.putInt("hintCount", hintCount)
     }
 
-    fun enableAllButtons() {
+    fun resetKeyboard() {
         val buttons = arrayOf(
             binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
             binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
@@ -169,4 +160,5 @@ class KeyboardFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

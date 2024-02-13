@@ -40,4 +40,8 @@
     <string name="success_message">Congratulations! You guessed the word correctly. On to the next\u2026</string>
     <string name="failed_message">You\'ve ran out of lives! Don\'t mind it. Try to get the next one\u2026</string>
     <string name="ok">OK</string>
+    <string name="out_of_hints">You\'ve already used your 3 hints. No hints left.</string>
+    <string name="too_few_lives">You only have one life left. Using another hint would take it.</string>
+    <string name="second_hint">Half of remaining letters not in word have been removed. </string>
+    <string name="third_hint">All vowels are now in word.</string>
 </resources>

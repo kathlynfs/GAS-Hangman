@@ -48,4 +48,5 @@ class SharedViewModel : ViewModel() {
     {
         return isReturningState
     }
+
 }

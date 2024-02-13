@@ -10,26 +10,43 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.gashangman.databinding.FragmentHangmanBinding
 import android.app.AlertDialog
+import android.widget.Button
 
 class HangmanFragment : Fragment() {
     private var _binding: FragmentHangmanBinding? = null
     private var keyboardPressed: BooleanArray = BooleanArray(26)
     private var lives: Int = 6
+    private var hintCount = 0
     private lateinit var word: String
     private lateinit var wordArr: CharArray
-
-
-    // initial index = 0
-    private var currentIndex = 0
+    private lateinit var newGameButton: Button
 
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
         }
 
+    val wordBank: List<Int>
+        get() = listOf(
+            R.string.guess_android,
+            R.string.guess_camera,
+            R.string.guess_fragment,
+            R.string.guess_activity,
+            R.string.guess_you
+        )
+
+    private var currentIndex = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
+
+    private fun updateWord() {
+        // Update the word with the next word from the word bank
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +57,17 @@ class HangmanFragment : Fragment() {
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
         word = getString(R.string.guess_android)
         wordArr = word.toCharArray()
+
+        // Initialize the newGameButton
+        binding.newGameButton.setOnClickListener {
+            // Increment currentIndex to cycle through words
+            currentIndex = (currentIndex + 1) % wordBank.size
+            // Update the word
+            updateWord()
+            // Reset the game state
+            resetGame()
+        }
+
         return binding.root
     }
 
@@ -76,6 +104,20 @@ class HangmanFragment : Fragment() {
                     setImageResource(R.drawable.hangman_state_1_lives)
                 } else if (lives <= 0) {
                     setImageResource(R.drawable.hangman_state_0_lives)
+                }
+            }
+        })
+
+        viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
+            hintCount = input
+            if(!viewModel.getIsReturningState()) {
+                if (hintCount == 3) {
+                    var vowels = "AEIOU"
+                    for (v in vowels) {
+                        keyboardPressed[v - 'A'] = true
+                    }
+
+                    printWordAndLives()
                 }
             }
         })
@@ -143,18 +185,21 @@ class HangmanFragment : Fragment() {
     }
 
     private fun resetGame() {
-        // reset lives
+        // Reset lives
         lives = 6
 
-        // reset hint count
+        // Reset hint count
+        hintCount = 0
 
-        // reset keyboard
-        keyboardPressed.fill(false)
+        // Reset keyboard
+        keyboardPressed = BooleanArray(26)
 
-
-        // reset hangman view
+        // Reset hangman view
         binding.imageView.setImageResource(R.drawable.hangman_state_6_lives)
+
+        // Reset the UI to reflect the changes
         printWordAndLives()
     }
+
 
 }
