@@ -17,14 +17,8 @@ class MainActivity : AppCompatActivity() {
             setContentView(R.layout.activity_main)
         }
 
-        // Find and instantiate KeyboardFragment
-        val keyboardFragment = supportFragmentManager.findFragmentById(R.id.keyboardFragment) as KeyboardFragment
-        keyboardFragment.setInteractionListener(this)
     }
 
-    override fun resetKeyboard() {
-        val keyboardFragment = supportFragmentManager.findFragmentById(R.id.keyboardFragment) as? KeyboardFragment
-        keyboardFragment?.resetKeyboard()
-    }
+
 
 }

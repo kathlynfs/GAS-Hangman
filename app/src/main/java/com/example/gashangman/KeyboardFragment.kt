@@ -54,7 +54,7 @@ class KeyboardFragment : Fragment() {
         outState.putBooleanArray("keyboard", keyboardPressed)
     }
 
-    override fun enableAllButtons() {
+    fun enableAllButtons() {
         val buttons = arrayOf(
             binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
             binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
