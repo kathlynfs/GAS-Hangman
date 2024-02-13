@@ -24,6 +24,7 @@ class HangmanFragment : Fragment() {
     private lateinit var word: String
     private lateinit var wordArr: CharArray
     private var currentIndex: Int = 0
+    private val letters = ('a'..'z').toList()
 
     val wordBank: List<Int>
         get() = listOf(
@@ -96,19 +97,17 @@ class HangmanFragment : Fragment() {
                                 break
                             }
                         }
+
                         lives--
                     } else if (hints == 0) {
-                        var i = 0
-                        for (c in 'A'..'Z') {
-                            if (!word.contains(c) && random.nextBoolean()) {
-                                keyboardPressed[c - 'A'] = true
-                                model.setHangmanToKeyboard(c)
-                                i++
-                            }
-                            if (i >= 13) {
-                                break
-                            }
+                        var vowels = "aeiou"
+                        for (v in vowels) {
+                            keyboardPressed[v - 'a'] = true
+                            model.setChar(v.uppercaseChar())
                         }
+
+                        printWordAndLives()
+
                         lives--
                     }
                     printWordAndLives()
