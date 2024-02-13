@@ -9,19 +9,41 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.gashangman.databinding.FragmentHangmanBinding
+import android.app.AlertDialog
 
 class HangmanFragment : Fragment() {
     private var _binding: FragmentHangmanBinding? = null
     private var keyboardPressed: BooleanArray = BooleanArray(26)
     private var lives: Int = 6
     private var hintCount = 0
-    //LOOK TO MAKE THIS NOT HARD-CODED
-    private var word: String = "ANDROID"
-    private var wordArr: CharArray = word.toCharArray()
+    private lateinit var word: String
+    private lateinit var wordArr: CharArray
+    private var newGameEvent: Boolean = false
+
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
         }
+
+    val wordBank: List<Int>
+        get() = listOf(
+            R.string.guess_android,
+            R.string.guess_camera,
+            R.string.guess_fragment,
+            R.string.guess_activity,
+            R.string.guess_you
+        )
+
+    val hintBank: List<Int>
+        get() = listOf(
+            R.string.hint_android,
+            R.string.hint_camera,
+            R.string.hint_fragment,
+            R.string.hint_activity,
+            R.string.hint_you
+        )
+
+    private var currentIndex = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +56,14 @@ class HangmanFragment : Fragment() {
     ): View? {
         _binding =
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
+        word = getString(R.string.guess_android)
+        wordArr = word.toCharArray()
+
+        // Initialize the newGameButton
+        binding.newGameButton.setOnClickListener {
+            resetGame()
+        }
+
         return binding.root
     }
 
@@ -41,12 +71,14 @@ class HangmanFragment : Fragment() {
         super.onSaveInstanceState(outState)
         outState.putBooleanArray("keyboard", keyboardPressed)
         outState.putInt("lives", lives)
-        outState.putInt("hintCount", hintCount)
+        outState.putInt("currentIndex", currentIndex)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TAG", R.string.word_to_guess.toString())
+
+        Log.d("TAG", R.string.guess_android.toString())
+
         printWordAndLives()
         binding.imageView.apply {
             setImageResource(R.drawable.hangman_state_6_lives)
@@ -70,7 +102,7 @@ class HangmanFragment : Fragment() {
                     setImageResource(R.drawable.hangman_state_0_lives)
                 }
             }
-        })
+        } )
 
         viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
             hintCount = input
@@ -95,11 +127,15 @@ class HangmanFragment : Fragment() {
             keyboardPressed[input - 'A'] = true
 
             printWordAndLives()
+            checkGameState()
         })
 
         if (savedInstanceState != null) {
             keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
-            lives = savedInstanceState.getInt("lives")
+            lives = savedInstanceState.getInt("lives") ?: 6
+            currentIndex = savedInstanceState.getInt("currentIndex") ?: 0
+            updateWord(currentIndex)
+            printWordAndLives()
         }
     }
     override fun onDestroyView() {
@@ -114,10 +150,79 @@ class HangmanFragment : Fragment() {
                 text = if (keyboardPressed[c - 'A']) {
                     text.toString() + c
                 } else {
-                    text.toString() + '_'
+                    text.toString() + getString(R.string.dash)
                 }
-                text = text.toString() + " "
+                text = text.toString() + getString(R.string.space)
             }
         }
     }
+
+    private fun checkGameState(){
+        var success = true
+        for (c in wordArr) {
+            if (!keyboardPressed[c - 'A']) {
+                success = false
+                break
+            }
+        }
+        if (success) {
+            gameOver(true) // Player successfully guessed all letters
+        } else if (lives == 0) {
+            gameOver(false) // Player lost all lives without guessing the word
+        }
+    }
+
+    private fun gameOver(success: Boolean) {
+        // assign the correct message depending on win/lose
+        val message = if (success) {
+            getString(R.string.success_message)
+        } else {
+            getString(R.string.failed_message)
+        }
+
+        // setup the dialog
+        AlertDialog.Builder(requireContext())
+            .setMessage(message)
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                resetGame()
+                dialog.dismiss()
+            }
+            .setCancelable(false) // Prevent dismissing dialog when clicking outside or back button
+            .show()
+    }
+
+    private fun updateWord(index: Int) {
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
+    }
+
+    private fun resetGame() {
+        val viewModel: SharedViewModel by activityViewModels()
+        // Reset lives
+        lives = 6
+        viewModel.setLives(lives)
+
+        // Reset hint count
+        hintCount = 0
+        viewModel.setHintCount(hintCount)
+
+        // Update the word
+        currentIndex = (currentIndex + 1) % wordBank.size // Increment currentIndex to cycle through words
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
+        viewModel.setCurrentIndex(currentIndex)
+
+        // Reset keyboard
+        newGameEvent = true
+        viewModel.setState(newGameEvent)
+        keyboardPressed = BooleanArray(26)
+
+        // Reset hangman view
+        binding.imageView.setImageResource(R.drawable.hangman_state_6_lives)
+
+        // Reset the UI to reflect the changes
+        printWordAndLives()
+    }
+
+
 }

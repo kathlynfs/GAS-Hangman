@@ -56,7 +56,7 @@ class HintFragment : Fragment()
 
             if(hintCount == 0)
             {
-                binding.hint.setText(R.string.hint)
+                binding.hint.setText(R.string.hint_android)
                 hintCount +=1
                 viewModel.setIsReturningState(false)
                 viewModel.setHintCount(hintCount)
@@ -119,7 +119,7 @@ class HintFragment : Fragment()
 
             if(hintCount >= 1)
             {
-                binding.hint.setText(R.string.hint)
+                binding.hint.setText(R.string.hint_android)
             }
 
             viewModel.setHintCount(hintCount)
