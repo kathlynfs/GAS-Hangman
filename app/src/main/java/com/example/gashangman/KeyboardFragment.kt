@@ -46,19 +46,6 @@ class KeyboardFragment : Fragment() {
         outState.putInt("hintCount", hintCount)
     }
 
-    fun resetKeyboard() {
-        val buttons = arrayOf(
-            binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
-            binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
-            binding.o, binding.p, binding.q, binding.r, binding.s, binding.t, binding.u,
-            binding.v, binding.w, binding.x, binding.y, binding.z
-        )
-
-        buttons.forEach { button ->
-            button.isEnabled = true
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val viewModel: SharedViewModel by activityViewModels()
@@ -74,6 +61,23 @@ class KeyboardFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.getState().observe(viewLifecycleOwner, Observer<Boolean> { newGameEvent ->
+            if (newGameEvent) {
+                val buttons = arrayOf(
+                    binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
+                    binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
+                    binding.o, binding.p, binding.q, binding.r, binding.s, binding.t, binding.u,
+                    binding.v, binding.w, binding.x, binding.y, binding.z
+                )
+
+                buttons.forEach { button ->
+                    button.isEnabled = true
+                }
+            }
+        })
+
+
 
         viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
             hintCount = input

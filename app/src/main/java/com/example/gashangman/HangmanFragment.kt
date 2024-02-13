@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.gashangman.databinding.FragmentHangmanBinding
 import android.app.AlertDialog
-import android.widget.Button
 
 class HangmanFragment : Fragment() {
     private var _binding: FragmentHangmanBinding? = null
@@ -19,7 +18,7 @@ class HangmanFragment : Fragment() {
     private var hintCount = 0
     private lateinit var word: String
     private lateinit var wordArr: CharArray
-    private lateinit var newGameButton: Button
+    private var newGameEvent: Boolean = false
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -41,13 +40,6 @@ class HangmanFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-    private fun updateWord() {
-        // Update the word with the next word from the word bank
-        word = getString(wordBank[currentIndex])
-        wordArr = word.toCharArray()
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -60,11 +52,6 @@ class HangmanFragment : Fragment() {
 
         // Initialize the newGameButton
         binding.newGameButton.setOnClickListener {
-            // Increment currentIndex to cycle through words
-            currentIndex = (currentIndex + 1) % wordBank.size
-            // Update the word
-            updateWord()
-            // Reset the game state
             resetGame()
         }
 
@@ -81,7 +68,6 @@ class HangmanFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         Log.d("TAG", R.string.guess_android.toString())
-
 
         printWordAndLives()
         binding.imageView.apply {
@@ -106,7 +92,7 @@ class HangmanFragment : Fragment() {
                     setImageResource(R.drawable.hangman_state_0_lives)
                 }
             }
-        })
+        } )
 
         viewModel.getHintCount().observe(viewLifecycleOwner, Observer<Int> {input ->
             hintCount = input
@@ -125,13 +111,13 @@ class HangmanFragment : Fragment() {
         viewModel.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
             if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
                 lives -= 1
-                checkGameState()
                 viewModel.setLives(lives)
             }
 
             keyboardPressed[input - 'A'] = true
 
             printWordAndLives()
+            checkGameState()
         })
 
         if (savedInstanceState != null) {
@@ -159,10 +145,18 @@ class HangmanFragment : Fragment() {
     }
 
     private fun checkGameState(){
-        if (lives == 0) {
-            gameOver(false)
+        var success = true
+        for (c in wordArr) {
+            if (!keyboardPressed[c - 'A']) {
+                success = false
+                break
+            }
         }
-        // implement success state
+        if (success) {
+            gameOver(true) // Player successfully guessed all letters
+        } else if (lives == 0) {
+            gameOver(false) // Player lost all lives without guessing the word
+        }
     }
 
     private fun gameOver(success: Boolean) {
@@ -185,13 +179,24 @@ class HangmanFragment : Fragment() {
     }
 
     private fun resetGame() {
+        val viewModel: SharedViewModel by activityViewModels()
         // Reset lives
         lives = 6
+        viewModel.setLives(lives)
 
         // Reset hint count
         hintCount = 0
+        viewModel.setHintCount(hintCount)
+
+        // Update the word
+        currentIndex = (currentIndex + 1) % wordBank.size // Increment currentIndex to cycle through words
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
+        viewModel.setCurrentIndex(currentIndex)
 
         // Reset keyboard
+        newGameEvent = true
+        viewModel.setState(newGameEvent)
         keyboardPressed = BooleanArray(26)
 
         // Reset hangman view

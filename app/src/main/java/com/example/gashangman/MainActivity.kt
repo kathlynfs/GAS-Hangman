@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 
 // define GuessWord class
+data class GuessWord(val word: String, val clue: String)
+
 
 class MainActivity : AppCompatActivity() {
 
