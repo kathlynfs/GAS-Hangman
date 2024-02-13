@@ -8,6 +8,7 @@ class SharedViewModel : ViewModel() {
     private val char = MutableLiveData<Char>()
     private val lives = MutableLiveData<Int>()
     private var currentIndex = MutableLiveData<Int>()
+    private val hintCount = MutableLiveData<Int>()
 
     fun getCurrentIndex(): MutableLiveData<Int> {
         return currentIndex
@@ -15,6 +16,14 @@ class SharedViewModel : ViewModel() {
     fun setCurrentIndex(input: Int) {
         currentIndex.value = input
     }
+
+    fun setHintCount(input: Int) {
+        hintCount.value = input
+    }
+    fun getHintCount() : LiveData<Int> {
+        return hintCount
+    }
+
     fun setHints(input: Int) {
         lives.value = input
     }

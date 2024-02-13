@@ -1,5 +1,6 @@
 package com.example.gashangman
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +23,16 @@ class HangmanFragment : Fragment() {
     private val random = Random(seed)
     private lateinit var word: String
     private lateinit var wordArr: CharArray
+    private var currentIndex: Int = 0
+
+    val wordBank: List<Int>
+        get() = listOf(
+            R.string.guess_android,
+            R.string.guess_camera,
+            R.string.guess_fragment,
+            R.string.guess_activity,
+            R.string.guess_you
+        )
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
@@ -38,8 +49,6 @@ class HangmanFragment : Fragment() {
     ): View? {
         _binding =
             FragmentHangmanBinding.inflate(layoutInflater, container, false)
-        word = getString(R.string.word_to_guess)
-        wordArr = word.toCharArray()
         return binding.root
     }
 
@@ -48,12 +57,23 @@ class HangmanFragment : Fragment() {
         outState.putBooleanArray("keyboard", keyboardPressed)
         outState.putInt("lives", lives)
         outState.putBoolean("toastMade", toastMade)
+        outState.putInt("currentIndex", currentIndex)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (savedInstanceState != null) {
+            keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
+            lives = savedInstanceState.getInt("lives") ?: 6
+            toastMade = savedInstanceState.getBoolean("toastMade") ?: false
+            currentIndex = savedInstanceState.getInt("currentIndex") ?: 0
+        }
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
 
-        Log.d("TAG", R.string.word_to_guess.toString())
+        binding.newGameButton.setOnClickListener {
+            resetGame()
+        }
         printWordAndLives()
         binding.imageView.apply {
             setImageResource(R.drawable.hangman_state_6_lives)
@@ -108,22 +128,22 @@ class HangmanFragment : Fragment() {
         })
 
         model.getChar().observe(viewLifecycleOwner, Observer<Char> { input ->
-            if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
-                lives -= 1
+            if (input != 'a') {
+                if (!keyboardPressed[input - 'A'] and !word.contains(input)) {
+                    lives -= 1
+                }
+
+                printWordAndLives()
+
+                keyboardPressed[input - 'A'] = true
+
+                printWordAndLives()
+                checkGameState()
             }
 
-            printWordAndLives()
-
-            keyboardPressed[input - 'A'] = true
-
-            printWordAndLives()
         })
 
-        if (savedInstanceState != null) {
-            keyboardPressed = savedInstanceState.getBooleanArray("keyboard") ?: BooleanArray(26)
-            lives = savedInstanceState.getInt("lives") ?: 6
-            toastMade = savedInstanceState.getBoolean("toastMade") ?: false
-        }
+
     }
     override fun onDestroyView() {
         super.onDestroyView()
@@ -142,8 +162,11 @@ class HangmanFragment : Fragment() {
                 text = text.toString() + " "
             }
         }
+        Log.d("TAG", lives.toString())
         binding.imageView.apply{
-            if (lives == 5) {
+            if (lives == 6) {
+                setImageResource(R.drawable.hangman_state_6_lives)
+            } else if (lives == 5) {
                 setImageResource(R.drawable.hangman_state_5_lives)
             } else if (lives == 4) {
                 setImageResource(R.drawable.hangman_state_4_lives)
@@ -159,5 +182,61 @@ class HangmanFragment : Fragment() {
         }
     }
 
+    private fun checkGameState(){
+        var success = true
+        for (c in wordArr) {
+            if (!keyboardPressed[c - 'A']) {
+                success = false
+                break
+            }
+        }
+        if (success) {
+            gameOver(true) // Player successfully guessed all letters
+        } else if (lives == 0) {
+            gameOver(false) // Player lost all lives without guessing the word
+        }
+    }
+
+    private fun gameOver(success: Boolean) {
+        // assign the correct message depending on win/lose
+        val message = if (success) {
+            getString(R.string.success_message)
+        } else {
+            getString(R.string.failed_message)
+        }
+
+        // setup the dialog
+        AlertDialog.Builder(requireContext())
+            .setMessage(message)
+            .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                resetGame()
+                dialog.dismiss()
+            }
+            .setCancelable(false) // Prevent dismissing dialog when clicking outside or back button
+            .show()
+    }
+
+
+    private fun resetGame() {
+        val viewModel: SharedViewModel by activityViewModels()
+        // Reset lives
+        lives = 6
+        Log.d("TAGGGGG", lives.toString())
+
+        viewModel.setHintCount(3)
+
+        keyboardPressed.fill(false)
+
+        // Update the word
+        currentIndex = (currentIndex + 1) % wordBank.size // Increment currentIndex to cycle through words
+        word = getString(wordBank[currentIndex])
+        wordArr = word.toCharArray()
+        viewModel.setCurrentIndex(currentIndex)
+
+        viewModel.setHangmanToKeyboard('a')
+
+        // Reset the UI to reflect the changes
+        printWordAndLives()
+    }
 
 }

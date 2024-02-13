@@ -62,13 +62,19 @@ class KeyboardFragment : Fragment() {
             }
         }
         viewModel.getHangmanToKeyboard().observe(viewLifecycleOwner, Observer<Char> { input ->
-            keyboardPressed[input - 'A'] = true
             val buttons = arrayOf(
                 binding.a, binding.b, binding.c, binding.d, binding.e, binding.f, binding.g,
                 binding.h, binding.i, binding.j, binding.k, binding.l, binding.m, binding.n,
                 binding.o, binding.p, binding.q, binding.r, binding.s, binding.t, binding.u,
                 binding.v, binding.w, binding.x, binding.y, binding.z
             )
+
+            if (input == 'a') {
+                keyboardPressed.fill(false)
+            } else {
+                keyboardPressed[input - 'A'] = true
+            }
+
 
             buttons.forEachIndexed { index, button ->
                 button.isEnabled = !keyboardPressed[index]
